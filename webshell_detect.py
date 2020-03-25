@@ -37,7 +37,7 @@ def files_to_str(path):
 def main():
     #生成字典
     pdata,plabels=files_to_str(path)
-    tokenizer=Tokenizer(max_words)#字典个数
+    tokenizer=Tokenizer(num_words=max_words)#字典个数
     tokenizer.fit_on_texts(pdata)
     word_index=tokenizer.index_word
     print(f"字典个数{len(word_index)}")
@@ -45,11 +45,11 @@ def main():
     sequences=tokenizer.texts_to_sequences(pdata)
     #生成数据标签
     data=pad_sequences(sequences,maxlen=max_len)
-    labels=np.asarray(layers)
+    labels=np.asarray(plabels)
     #打乱数据标签
     indices=np.arange(data.shape[0])
     np.random.shuffle(indices)
-    data=data[indices:]
+    data=data[indices]
     labels=labels[indices]
     print("data shape: ",data.shape)
     print("labes shape:",labels.shape)
@@ -64,11 +64,11 @@ def main():
     model=models.Sequential()
     model.add(layers.Embedding(max_words,32,input_length=max_len))
     model.add(layers.Flatten())
-    model.add(layers.Dense(32,activation=""))
+    model.add(layers.Dense(32,activation="relu"))
     model.add(layers.Dense(1,activation="sigmoid"))
     #编译并训练模型
     model.compile(optimizer="rmsprop",loss='binary_crossentropy',metrics=['acc'])
-    history=model.fit(x_train,y_train,batch_size=128,epochs=5,validation_data=(x_val,y_val))
+    history=model.fit(x_train,y_train,batch_size=128,epochs=20,validation_data=(x_val,y_val))
     model.save_weights("embed_model.h5")
     #history
     acc=history.history['acc']
@@ -86,8 +86,8 @@ def main():
     plt.title("Training and Validation loss")
     plt.legend()
     plt.show()
-    #绘制结果
-    import matplotlib.pyplot as plt
+    results=model.evaluate(x_test,y_test)
+    print(f"损失值：{results[0]},精确度：{results[1]}")
 if __name__ == "__main__":
     main()
 
