@@ -76,8 +76,16 @@ def main():
     loss=history.history['loss']
     val_loss=history.history['val_loss']
     epochs=range(1,len(acc)+1)
-    plt.plot(epochs,acc,'bo',label="Train acc")
-
+    plt.plot(epochs,acc,'bo',label="Training acc")
+    plt.plot(epochs,val_acc,'bo',label="Validation acc")
+    plt.title("Training and Validation accuracy")
+    plt.legend()
+    plt.figure()
+    plt.plot(epochs,loss,'bo',label="Trainig loss")
+    plt.plot(epochs,val_loss,'bo',label="Validation loss")
+    plt.title("Training and Validation loss")
+    plt.legend()
+    plt.show()
     #绘制结果
     import matplotlib.pyplot as plt
 if __name__ == "__main__":
