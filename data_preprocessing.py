@@ -1,10 +1,10 @@
 import os
 import shutil
 #listdir=os.listdir("D:/webshell-detect/samples_data/WordPress")
-data=[["D:/webshell-detect/samples_data/webshell","D:/webshell-detect/php/phptrain" ,"ta",".php"] ,\
+data=[["D:/webshell-detect/samples_data/webshell","D:/webshell-detect/php/phptrain" ,"Ta",".php"] ,\
     ["D:/webshell-detect/samples_data/WordPress","D:/webshell-detect/php/phptrain","F",".php"],\
-    ["D:/webshell-detect/samples_data/Webshell2","D:/webshell-detect/php/phptrain" ,"tb",".php"],\
-    ["D:/webshell-detect/samples_data/php-webshells","D:/webshell-detect/php/phptrain" ,"tc",".php"]]
+    ["D:/webshell-detect/samples_data/Webshell2","D:/webshell-detect/php/phptrain" ,"Tb",".php"],\
+    ["D:/webshell-detect/samples_data/php-webshells","D:/webshell-detect/php/phptrain" ,"Tc",".php"]]
 def copyfile(dir_path,target_path,name,extension):
     i=0
     for root,dirs,files in os.walk(dir_path):
