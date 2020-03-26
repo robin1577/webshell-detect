@@ -1,4 +1,15 @@
-a=[0,1,2,3,4,5]
-index=[1,2,4,3,0,5]
-b=a[index]
-print(b)
+#coding=utf8
+import sys, locale
+s = "小甲"
+print(s)
+print(type(s))
+print(sys.getdefaultencoding())
+print(locale.getdefaultlocale())
+"""
+with open("utf2","w",encoding = "utf-8") as f:
+    f.write(s)
+with open("gbk2","w",encoding = "gbk") as f:
+    f.write(s)
+with open("jis2","w",encoding = "shift-jis") as f:
+    f.write(s)
+"""

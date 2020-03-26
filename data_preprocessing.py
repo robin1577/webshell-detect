@@ -14,7 +14,7 @@ def copyfile(dir_path,target_path,name,extension):
                 shutil.copy(os.path.join(root,file),os.path.join(target_path,name+str(i)+extension))
                 i+=1
                 if i>999:
-                    break
+                    return
 def main():
     for sample in data:
         copyfile(sample[0],sample[1],sample[2],sample[3])
