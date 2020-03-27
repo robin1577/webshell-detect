@@ -46,6 +46,7 @@ def files_to_str(path):
 def main():
     #生成字典
     pdata,plabels=files_to_str(path)
+    
     tokenizer=Tokenizer(num_words=max_words,filters=""" '!"#$%&()*+,-./:;<=>?@[\]^_`{|}~\t\n""")#字典个数
     tokenizer.fit_on_texts(pdata)
     word_index=tokenizer.index_word
@@ -75,7 +76,7 @@ def main():
     y_test=labels[1360:]
     #构建网络
     model=models.Sequential()
-    model.add(layers.Embedding(max_words,100,input_length=max_len))
+    model.add(layers.Embedding(max_words,128,input_length=max_len))
     model.add(layers.Flatten())
     model.add(layers.Dense(32,activation="relu"))
     model.add(layers.Dense(1,activation="sigmoid"))
@@ -106,4 +107,4 @@ if __name__ == "__main__":
 
 
 
- 
+  
