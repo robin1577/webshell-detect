@@ -8,9 +8,9 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras import models,layers
 import pandas as pd
-path="D:\webshell-detect\php\phptrain"
-max_len=500#每一个文件最大读入500个单词
-max_words=40000#字典最大个数
+path="D:\webshell-detect\php\phptrain_opcode"
+max_len=1000#每一个文件最大读入1000个单词
+max_words=200#字典最大个数
 def file_to_str(name):
     string=""
     with open(name, 'r',encoding="utf8") as f:
@@ -46,8 +46,7 @@ def files_to_str(path):
 def main():
     #生成字典
     pdata,plabels=files_to_str(path)
-    
-    tokenizer=Tokenizer(num_words=max_words,filters=""" '!"#$%&()*+,-./:;<=>?@[\]^_`{|}~\t\n""")#字典个数
+    tokenizer=Tokenizer(num_words=max_words,filters=""" '!"#$%&()*+,-./:;<=>?@[\]^`{|}~\t\n""")#字典个数
     tokenizer.fit_on_texts(pdata)
     word_index=tokenizer.index_word
     #with open('models/tokenizer.pickle', 'wb') as f:
@@ -68,22 +67,25 @@ def main():
     print("data shape: ",data.shape)
     print("labes shape:",labels.shape)
     #划为数据为训练,验证，测试 6:2:2
-    x_train=data[:1020]
-    y_train=labels[:1020]
-    x_val=data[1020:1360]
-    y_val=labels[1020:1360]
+    x_train=data[:1000]
+    y_train=labels[:1000]
+    x_val=data[1000:1360]
+    y_val=labels[1000:1360]
     x_test=data[1360:]
     y_test=labels[1360:]
     #构建网络
     model=models.Sequential()
+    '''
     model.add(layers.Embedding(max_words,128,input_length=max_len))
     model.add(layers.Flatten())
-    model.add(layers.Dense(32,activation="relu"))
+    '''
+    model.add(layers.Dense(128,activation="relu",input_shape=(1000,)))
+    model.add(layers.Dense(64,activation="relu"))
     model.add(layers.Dense(1,activation="sigmoid"))
     #编译并训练模型
     model.compile(optimizer="rmsprop",loss='binary_crossentropy',metrics=['acc'])
     history=model.fit(x_train,y_train,batch_size=128,epochs=50,validation_data=(x_val,y_val))
-    model.save("models/embed_model.h5")
+    model.save("../models/embed_model.h5")
     #history
     acc=history.history['acc']
     val_acc=history.history['val_acc']
