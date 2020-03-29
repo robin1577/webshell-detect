@@ -10,7 +10,7 @@ from keras import models,layers
 import pandas as pd
 path="D:\webshell-detect\php\phptrain_opcode"
 max_len=1000#每一个文件最大读入1000个单词
-max_words=200#字典最大个数
+max_words=300#字典最大个数
 def file_to_str(name):
     string=""
     with open(name, 'r',encoding="utf8") as f:
@@ -66,24 +66,27 @@ def main():
     labels=labels[indices]
     print("data shape: ",data.shape)
     print("labes shape:",labels.shape)
+    #值标准化
     #划为数据为训练,验证，测试 6:2:2
-    x_train=data[:1000]
-    y_train=labels[:1000]
-    x_val=data[1000:1360]
-    y_val=labels[1000:1360]
-    x_test=data[1360:]
-    y_test=labels[1360:]
+    x_train=data[:6000]
+    y_train=labels[:6000]
+    x_val=data[6000:7500]
+    y_val=labels[6000:7500]
+    x_test=data[7500:]
+    y_test=labels[7500:]
+    
     #构建网络
     model=models.Sequential()
     '''
     model.add(layers.Embedding(max_words,128,input_length=max_len))
     model.add(layers.Flatten())
     '''
-    model.add(layers.Dense(128,activation="relu",input_shape=(1000,)))
-    model.add(layers.Dense(64,activation="relu"))
+    model.add(layers.Dense(256,activation="relu",input_shape=(1000,)))
+    model.add(layers.Dropout(0.4))
+    model.add(layers.Dense(128,activation="relu"))
     model.add(layers.Dense(1,activation="sigmoid"))
     #编译并训练模型
-    model.compile(optimizer="rmsprop",loss='binary_crossentropy',metrics=['acc'])
+    model.compile(optimizer="SGD",loss='binary_crossentropy',metrics=['acc'])
     history=model.fit(x_train,y_train,batch_size=128,epochs=50,validation_data=(x_val,y_val))
     model.save("../models/embed_model.h5")
     #history
