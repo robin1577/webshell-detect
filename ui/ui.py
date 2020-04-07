@@ -14,13 +14,16 @@ class Window(QWidget):
         #设置窗口的标题
         self.setWindowTitle('Icon')
         #设置窗口的图标，引用当前目录下的web.png图片
-        self.setWindowIcon(QIcon("ui/icon.jpg"))        
+        self.setWindowIcon(QIcon("icon.jpg"))        
         #开始布局：
         add_files_button=QPushButton("添加文件夹")
+        add_files_button.resize(150,50)
         add_file_button=QPushButton("添加文件")
+        add_file_button.resize(150,50)
         del_files_button=QPushButton("删除全部")
+        del_files_button.resize(150,50)
         del_file_button=QPushButton("删除")
-        
+        del_file_button.resize(150,50)
         qh=QHBoxLayout()
         qh.addWidget(QTextEdit())
         qv=QVBoxLayout()

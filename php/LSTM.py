@@ -46,7 +46,7 @@ def files_to_str(path):
     return(t+f,tlabel+flabel)
 
 def main():
-    '''
+    
     #生成字典
     pdata,plabels=files_to_str(path)
     tokenizer=Tokenizer(num_words=max_words,filters=""" '!"#$%&()*+,-./:;<=>?@[\]^`{|}~\t\n""")#字典个数
@@ -77,20 +77,12 @@ def main():
     y_val=labels[6000:7500]
     x_test=data[7500:]
     y_test=labels[7500:]
-    '''
+    
     #构建网络
     model=models.Sequential()
-    '''
-    model.add(layers.Embedding(max_words,128,input_length=max_len))
-    model.add(layers.Flatten())
-    '''
-    model.add(layers.Dense(64,activation="relu",input_shape=(100,)))
-    model.add(layers.Dropout(0.4))
-    #model.add(layers.Dense(32,activation="relu"))
-    model.add(layers.Dense(8,activation="relu"))
-    #model.add(layers.Dropout(0.1))
+    model.add(layers.LSTM((16)))
     model.add(layers.Dense(1,activation="sigmoid"))
-    plot_model(model,show_shapes=True,to_file='../logs/DNN_model.png')
+    plot_model(model,show_shapes=True,to_file='../logs/LSTM_model.png')
     #可视化模块
     callback=[
         callbacks.TensorBoard(
@@ -101,10 +93,9 @@ def main():
     ]
     #显示模型层
 
-    '''
     #编译并训练模型
     model.compile(optimizer="adam",loss='binary_crossentropy',metrics=['acc'])
-    history=model.fit(x_train,y_train,batch_size=128,epochs=100,validation_data=(x_val,y_val),callbacks=callback)
+    history=model.fit(x_train,y_train,batch_size=128,epochs=20,validation_data=(x_val,y_val),callbacks=callback)
     model.save("../models/DNN_embed_model.h5")
     #history
     acc=history.history['acc']
@@ -124,7 +115,6 @@ def main():
     plt.show()
     results=model.evaluate(x_test,y_test)
     print(f"损失值：{results[0]},精确度：{results[1]}")
-    '''
 if __name__ == "__main__":
     main()
 
