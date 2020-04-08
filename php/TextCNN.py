@@ -7,8 +7,9 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras import layers,callbacks,Input,Model
 import pandas as pd
+from keras.utils  import plot_model
 path="D:\webshell-detect\php\phptrain_opcode"
-max_len=100#每一个文件最大读入1000个单词
+max_len=100#每一个文件最大读入100个单词
 max_words=300#字典最大个数
 epoch=50
 def file_to_str(name):
@@ -59,8 +60,18 @@ def TextCNN_model(x_train,y_train,x_val,y_val,x_test,y_test):
     drop =layers.Dropout(0.2)(flat)
     text_putput =layers.Dense(1, activation='sigmoid')(drop)
     model =Model(inputs=text_input, outputs=text_putput)
+    plot_model(model,to_file='../logs/TextCNN_model.png')
+    #print(model.summary())
+    #可视化模块
+    callback=[
+        callbacks.TensorBoard(
+            log_dir=r"D:\webshell-detect\logs\TextCNNlog",
+            histogram_freq=1,
+            write_images=1,
+        )
+    ]
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
-    history=model.fit(x_train,y_train,batch_size=128,epochs=epoch,validation_data=(x_val,y_val))
+    history=model.fit(x_train,y_train,batch_size=128,epochs=epoch,validation_data=(x_val,y_val),callbacks=callback)
     model.save("../models/TestRNN_model.h5")
     results=model.evaluate(x_test,y_test)
     print(f"损失值：{results[0]},精确度：{results[1]}")
