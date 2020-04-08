@@ -11,7 +11,7 @@ from keras.utils  import plot_model
 path="D:\webshell-detect\php\phptrain_opcode"
 max_len=100#每一个文件最大读入100个单词
 max_words=300#字典最大个数
-epoch=50
+epoch=20
 def file_to_str(name):
     string=""
     with open(name, 'r',encoding="utf8") as f:
@@ -46,7 +46,7 @@ def files_to_str(path):
 def TextCNN_model(x_train,y_train,x_val,y_val,x_test,y_test):
     text_input = Input(shape=(max_len,), dtype='float64')
     # 词嵌入训练
-    embedding =layers.Embedding(max_words,50, input_length=max_len)(text_input)
+    embedding =layers.Embedding(max_words,30, input_length=max_len)(text_input)
     # 词窗大小分别为3,4,5
     cnn1 =layers.Conv1D(128, 3,padding='same', activation='relu')(embedding)
     cnn1 =layers.MaxPooling1D(3)(cnn1)
