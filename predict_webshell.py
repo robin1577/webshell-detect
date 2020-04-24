@@ -20,18 +20,28 @@ def file_to_str(name):
                 line=line.strip("\r")
                 string+=line
             except:
-                line="1"
+                line=""
     return string
 def files_to_str(path,tokenizer):
     t=[]
+    #反序列化字典对象
+    with open('models/tokenizer.pickle','rb') as f:
+        tokenizer=pickle.load(f)  
+    #读取训练好的模型
     model=models.load_model("models/embed_model.h5")
+    #读取文件夹的文件
     for root,dirs,files in os.walk(path):
         for name in files:
+            #将文件内容转化成字符串（也就是api序列）
             string=file_to_str(os.path.join(root,name))
             string=[string]
+            #将字符串（api序列）转化成整数序列（通过字典对象）
             sequence=tokenizer.texts_to_sequences(string)
-            data=pad_sequences(sequence,maxlen=500)
+            #填充或截断整数序列为规定的值
+            data=pad_sequences(sequence,maxlen=max_len,padding="post",truncating="post")
+            #预测
             prediction=model.predict(data)
+            #结果>0.7为恶意序列
             if float(prediction[0][0]) > 0.7:
                 print(os.path.join(root,name))
             del data,prediction,sequence,string

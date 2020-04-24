@@ -21,6 +21,7 @@ def file_to_str(name):
                     line=f.readline()
                     line=line.strip("\n")
                     line=line.strip("\r")
+                    string+=' '
                     string+=line
                 except:
                     line="1"
