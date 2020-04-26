@@ -1,5 +1,5 @@
 #codind:utf-8
-import os,csv
+import os,csv,sys
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
@@ -9,22 +9,33 @@ from keras import models,layers,callbacks
 from keras import regularizers
 from keras.utils  import plot_model
 import pandas as pd
-path="D:\webshell-detect\php\phptrain_opcode"
-max_len=100#每一个文件最大读入1000个单词
+path="D:\webshell-detect\php\opcode.csv"
+max_len=100#每一个序列最大读入100个操作码
 max_words=300#字典最大个数
 def read_opcode(file):
+    #解决csv读取字段大小限制
+    maxInt = sys.maxsize
+    decrement = True
+    while decrement:
+        decrement = False
+        try:
+            csv.field_size_limit(maxInt)
+        except OverflowError:
+            maxInt = int(maxInt/10)
+            decrement = True
+    #
     t=[]
     f=[]
     tlabel=[]
     flabel=[]
-    with open('file') as f:
-        reader=csv.DictReader(f)
+    with open(file) as fd:
+        reader=csv.DictReader(fd)
         for row in reader:
-            if "T" in row[1]:
-                t.append(row[1])
+            if "T" in row['']:
+                t.append(row['0'])
                 tlabel.append(1)
-            elif "F" in row[1]:
-                f.append(row[1])
+            elif "F" in row['']:
+                f.append(row['0'])
                 flabel.append(0)
     print("sum:",len(t)+len(f))
     print("True:",len(t))
@@ -34,7 +45,6 @@ def read_opcode(file):
 def main():
     #生成字典
     pdata,plabels=read_opcode(path)
-    '''
     tokenizer=Tokenizer(num_words=max_words,filters=""" '!"#$%&()*+,-./:;<=>?@[\]^`{|}~\t\n""")#字典个数
     tokenizer.fit_on_texts(pdata)
     word_index=tokenizer.index_word
@@ -65,7 +75,7 @@ def main():
     y_test=labels[7500:]
     #构建网络
     model=models.Sequential()
-    model.add(layers.Dense(64,activation="relu",input_shape=(max_len)))
+    model.add(layers.Dense(64,activation="relu",input_shape=(max_len,)))
     model.add(layers.Dropout(0.4))
     #model.add(layers.Dense(32,activation="relu"))
     model.add(layers.Dense(8,activation="relu"))
@@ -104,7 +114,6 @@ def main():
     plt.show()
     results=model.evaluate(x_test,y_test)
     print(f"损失值：{results[0]},精确度：{results[1]}")
-    '''
 if __name__ == "__main__":
     main()
 
