@@ -17,7 +17,7 @@ def copyfile(dir_path,target_path):
                 status=1
                 pass
             if status==0:
-                string=re.findall(r'(\s[\b[A-Z_]+\b)\s',output)
+                string=re.findall(r'\b[A-Z_]+\b\s',output)
                 string="".join(string)
                 c_dict[file]=string
                 del string

@@ -10,7 +10,7 @@ from keras import regularizers
 from keras.utils  import plot_model
 import pandas as pd
 path="D:\webshell-detect\php\opcode.csv"
-max_len=100#每一个序列最大读入100个操作码
+max_len=1000#每一个序列最大读入1000个操作码
 max_words=300#字典最大个数
 def read_opcode(file):
     #解决csv读取字段大小限制
