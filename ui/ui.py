@@ -1,65 +1,96 @@
-#coding:utf-8
+import tkinter
+import tkinter.messagebox  # 消息框
+from tkinter import ttk
+import tkinter.filedialog as tkFD
+import os
 import sys
-from PyQt5.QtWidgets import (QWidget, QToolTip, QMessageBox,
-    QPushButton, QApplication,QTextEdit,QHBoxLayout, QVBoxLayout,QDesktopWidget)
-from PyQt5.QtGui import QIcon
-class Window(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.initUI() #界面绘制交给InitUi方法
-    def initUI(self):
-        #设置窗口的位置和大小
-        self.resize(800,450)
-        self.center() 
-        #设置窗口的标题
-        self.setWindowTitle('Icon')
-        #设置窗口的图标，引用当前目录下的web.png图片
-        self.setWindowIcon(QIcon("icon.jpg"))        
-        #开始布局：
-        add_files_button=QPushButton("添加文件夹")
-        add_files_button.resize(150,50)
-        add_file_button=QPushButton("添加文件")
-        add_file_button.resize(150,50)
-        del_files_button=QPushButton("删除全部")
-        del_files_button.resize(150,50)
-        del_file_button=QPushButton("删除")
-        del_file_button.resize(150,50)
-        qh=QHBoxLayout()
-        qh.addWidget(QTextEdit())
-        qv=QVBoxLayout()
-        qv.addWidget(add_files_button)
-        qv.addWidget(add_file_button)
-        qv.addWidget(del_files_button)
-        qv.addWidget(del_file_button)
-        qh.addLayout(qv)
-        self.setLayout(qh)
-        #显示窗口
-        self.show()
-    #控制窗口显示在屏幕中心的方法    
-    def center(self):
-        #获得窗口
-        qr = self.frameGeometry()
-        #获得屏幕中心点
-        cp = QDesktopWidget().availableGeometry().center()
-        #显示到屏幕中心
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-    #重写关闭窗口事件
-    def closeEvent(self, event): 
-        #显示一个消息框，是或者不是
-        reply = QMessageBox.question(self, '警告',"你确定要退出吗?", 
-            QMessageBox.Yes | QMessageBox.No, 
-            QMessageBox.No)#默认按钮
-        if reply == QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()   
-def main():
-    #界面实例
-    app=QApplication([])
-    #QWidget部件是pyqt5所有用户界面对象的基类。他为QWidget提供默认构造函数。默认构造函数没有父类。
-    w=Window()
-    #点击关闭窗口才关闭窗口
-    sys.exit(app.exec_())
-if __name__ == "__main__":
-    main()
+import random
+import win32api
+from win32com.shell import shell,shellcon
+number = 0
+def addfiles():
+    global number
+    #打开文件夹
+    path_dir = tkFD.askdirectory()
+    for root,dirs,files in os.walk(path_dir):
+        for file in files:
+            probability=predict(file)
+            path=str(root)+'/'+str(file)
+            if probability<9:
+                tree.insert('',index=number,iid=number,text=file,values=path)
+                number += 1
+    tkinter.messagebox.showwarning('已检测全部文件')
+    #print(path_dir)
+
+#添加文件
+def addfile():
+    global number
+    path_file=tkFD.askopenfilename()
+    filename=os.path.split(path_file)[1]
+    tree.insert("",index=number,iid=number,text=filename,values=path_file)
+    print(path_file)
+    tkinter.messagebox.showwarning('已检测全部文件')
+
+#清空显示
+def clear():
+    x=tree.get_children()#返回的是下标元组
+    print("children",x)
+    for item in x:
+        tree.delete(item)
+#TODO
+def predict(file):
+    return random.randint(1,10)
+#TODO
+def del_all():
+    x=tree.get_children()#返回的是下标元组
+    print("children",x)
+    for item in x:
+        filename=tree.item(item,"values")[0]
+        res= shell.SHFileOperation((0,shellcon.FO_DELETE,filename,None, shellcon.FOF_SILENT | shellcon.FOF_ALLOWUNDO | shellcon.FOF_NOCONFIRMATION,None,None))  #删除文件到回收站
+        tree.delete(item)
+    tkinter.messagebox.showinfo('已删除全部webshell')
+#双击文件名打开记事本
+def onDBClick(event):
+    index = tree.index(tree.selection()[0])
+    print("select:",tree.selection())
+    path=tree.item(index,"values")[0]
+    print("values:",path)
+    win32api.ShellExecute(0, 'open', 'notepad.exe', path, '', 1)
+
+def del_selected():
+    seleced=tree.selection()
+    print(seleced)
+    indexs =[tree.index(index) for index in seleced]
+    for index in indexs:
+        filename=tree.item(index,"values")[0]
+        shell.SHFileOperation((0,shellcon.FO_DELETE,filename,None, shellcon.FOF_SILENT | shellcon.FOF_ALLOWUNDO | shellcon.FOF_NOCONFIRMATION,None,None))  #删除文件到回收站
+        tree.delete(index)
+    tkinter.messagebox.showinfo('已删除选中的webshell')
+
+#初始化窗口
+window = tkinter.Tk() 
+#设置窗口标题
+window.title("websehll检测")
+#设置窗口大小
+window.geometry('800x500')
+window.resizable(False, False)#固定窗体
+
+front=('宋体',20)
+width=25
+tkinter.Label(window, text="webshell检测 ", font=front, width=width*2, height=4)\
+    .grid(row=0,column=0,columnspan=2)
+tkinter.Label(window,text='webshell文件',font=front,width=width)\
+    .grid(row=1,column=0)
+tkinter.Button(window, text="添加文件夹", width=width,command=addfiles).grid(row=2, column=1)
+tkinter.Button(window, text="添加文件", width=width,command=addfile).grid(row=3, column=1)
+tkinter.Button(window, text="删除选中websehll", width=width,command=del_selected).grid(row=4, column=1)
+tkinter.Button(window, text="删除全部webshell", width=width,command=del_all).grid(row=5, column=1)
+#创建树状链表，显示检测出来的webshell文件
+tree=ttk.Treeview(window)
+tree["selectmode"] = "extended"
+tree.bind("<Double-1>", onDBClick) #<Button-1>Double
+tree.grid(row=2, rowspan=5,column=0)
+tkinter.Button(window, text="清空", width=width,command=clear).grid(row=6, column=1)
+#b.pack()
+# 第6步，主窗口循环显示
+window.mainloop()
