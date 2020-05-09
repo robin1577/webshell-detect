@@ -7,7 +7,7 @@ import sys
 import random
 import win32api
 from win32com.shell import shell,shellcon
-import predict_webshell
+#import predict_webshell
 number = 0
 def addfiles():
     global number
@@ -68,7 +68,8 @@ def onDBClick(event):
 
 
 #初始化窗口
-window = tkinter.Tk() 
+window = tkinter.Tk()
+window.attributes("-alpha", 0.96) 
 #设置窗口标题
 window.title("websehll检测")
 #设置窗口大小
