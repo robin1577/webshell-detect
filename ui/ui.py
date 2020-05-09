@@ -7,6 +7,7 @@ import sys
 import random
 import win32api
 from win32com.shell import shell,shellcon
+import predict_webshell
 number = 0
 def addfiles():
     global number
@@ -17,9 +18,9 @@ def addfiles():
             probability=predict(file)
             path=str(root)+'/'+str(file)
             if probability<9:
-                tree.insert('',index=number,iid=number,text=file,values=path)
+                tree.insert('',index=10000+number,text=file,values=path)
                 number += 1
-    tkinter.messagebox.showwarning('已检测全部文件')
+    tkinter.messagebox.showinfo('提示','已检测全部文件')
     #print(path_dir)
 
 #添加文件
@@ -27,9 +28,9 @@ def addfile():
     global number
     path_file=tkFD.askopenfilename()
     filename=os.path.split(path_file)[1]
-    tree.insert("",index=number,iid=number,text=filename,values=path_file)
+    tree.insert("",index=number,text=filename,values=path_file)
     print(path_file)
-    tkinter.messagebox.showwarning('已检测全部文件')
+    tkinter.messagebox.showinfo('提示','已检测全部文件')
 
 #清空显示
 def clear():
@@ -40,32 +41,31 @@ def clear():
 #TODO
 def predict(file):
     return random.randint(1,10)
-#TODO
+def del_selected():
+    seleced=tree.selection()
+    for item in seleced:
+        filename=tree.item(item,"values")[0]
+        print(filename)
+        shell.SHFileOperation((0,shellcon.FO_DELETE,filename,None, shellcon.FOF_SILENT | shellcon.FOF_ALLOWUNDO | shellcon.FOF_NOCONFIRMATION,None,None))  #删除文件到回收站
+        tree.delete(item)
+    tkinter.messagebox.showinfo('提示','已删除选中的webshell')
+
 def del_all():
     x=tree.get_children()#返回的是下标元组
     print("children",x)
     for item in x:
         filename=tree.item(item,"values")[0]
-        res= shell.SHFileOperation((0,shellcon.FO_DELETE,filename,None, shellcon.FOF_SILENT | shellcon.FOF_ALLOWUNDO | shellcon.FOF_NOCONFIRMATION,None,None))  #删除文件到回收站
+        shell.SHFileOperation((0,shellcon.FO_DELETE,filename,None, shellcon.FOF_SILENT | shellcon.FOF_ALLOWUNDO | shellcon.FOF_NOCONFIRMATION,None,None))  #删除文件到回收站
         tree.delete(item)
-    tkinter.messagebox.showinfo('已删除全部webshell')
+    tkinter.messagebox.showinfo('提示','已删除全部webshell')
 #双击文件名打开记事本
 def onDBClick(event):
-    index = tree.index(tree.selection()[0])
+    item= tree.index(tree.selection()[0])
     print("select:",tree.selection())
-    path=tree.item(index,"values")[0]
+    path=tree.item(item,"values")[0]
     print("values:",path)
     win32api.ShellExecute(0, 'open', 'notepad.exe', path, '', 1)
 
-def del_selected():
-    seleced=tree.selection()
-    print(seleced)
-    indexs =[tree.index(index) for index in seleced]
-    for index in indexs:
-        filename=tree.item(index,"values")[0]
-        shell.SHFileOperation((0,shellcon.FO_DELETE,filename,None, shellcon.FOF_SILENT | shellcon.FOF_ALLOWUNDO | shellcon.FOF_NOCONFIRMATION,None,None))  #删除文件到回收站
-        tree.delete(index)
-    tkinter.messagebox.showinfo('已删除选中的webshell')
 
 #初始化窗口
 window = tkinter.Tk() 

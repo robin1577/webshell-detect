@@ -24,9 +24,7 @@ def file_to_str(name):
     return string
 def files_to_str(path,tokenizer):
     t=[]
-    #反序列化字典对象
-    with open('models/tokenizer.pickle','rb') as f:
-        tokenizer=pickle.load(f)  
+    webshell=[]
     #读取训练好的模型
     model=models.load_model("models/embed_model.h5")
     #读取文件夹的文件
@@ -43,11 +41,19 @@ def files_to_str(path,tokenizer):
             prediction=model.predict(data)
             #结果>0.7为恶意序列
             if float(prediction[0][0]) > 0.7:
-                print(os.path.join(root,name))
+                webshell.append(os.path.join(root,name))
             del data,prediction,sequence,string
-def main():
+    return webshell
+def predict_file(file_path):
+    with open('models/tokenizer.pickle','rb') as f:
+        tokenizer=pickle.load(f) 
+    model=models.load_model("models/embed_model.h5")
+    string=file_to_str(file_path)
+    
+    pass
+def predict_files(files_path):
     with open('models/tokenizer.pickle','rb') as f:
         tokenizer=pickle.load(f)  
-    files_to_str(path,tokenizer)
+    return(files_to_str(files_path,tokenizer))
 if __name__ == "__main__":
     main()
