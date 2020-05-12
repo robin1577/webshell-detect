@@ -82,7 +82,7 @@ def main():
     tokenizer=Tokenizer(num_words=max_words,filters=""" '!"#$%&()*+,-./:;<=>?@[\]^`{|}~\t\n""")#字典个数
     tokenizer.fit_on_texts(pdata)
     word_index=tokenizer.index_word
-    with open('models/tokenizer.pickle', 'wb') as f:
+    with open('../models/tokenizer.pickle', 'wb') as f:
       pickle.dump(tokenizer, f)
     print(f"字典个数{len(word_index)}")
     dataframe=pd.DataFrame.from_dict(word_index,orient="index")
@@ -92,7 +92,7 @@ def main():
     #生成数据标签
     data=pad_sequences(sequences,maxlen=max_len,padding="post",truncating="post")
     labels=np.asarray(plabels)
-    labels=labels.reshape((10268,1))
+    labels=labels.reshape((labels.shape[0],1))
     #打乱数据标签
     indices=np.arange(data.shape[0])
     np.random.shuffle(indices)

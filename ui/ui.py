@@ -6,6 +6,7 @@ import sys
 import random
 import win32api
 from win32com.shell import shell,shellcon
+import ui.predict_webshell
 #import predict_webshell
 number = 0
 def addfiles():
