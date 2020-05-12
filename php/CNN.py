@@ -1,5 +1,5 @@
 #codind:utf-8
-import os
+import os,csv,sys
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
@@ -10,44 +10,41 @@ from keras import callbacks
 import pandas as pd
 from keras.utils  import plot_model
 path="D:\webshell-detect\php\phptrain_opcode"
-max_len=100#每一个文件最大读入100个单词
+max_len=1000#每一个文件最大读入1000个操作码
 max_words=300#字典最大个数
-def file_to_str(name):
-    string=""
-    with open(name, 'r',encoding="utf8") as f:
-        line = "1"
-        while line:
-                try:
-                    line=f.readline()
-                    line=line.strip("\n")
-                    line=line.strip("\r")
-                    string+=line
-                except:
-                    line="1"
-    return string
-def files_to_str(path):
+def read_opcode(file):
+    #解决csv读取字段大小限制
+    maxInt = sys.maxsize
+    decrement = True
+    while decrement:
+        decrement = False
+        try:
+            csv.field_size_limit(maxInt)
+        except OverflowError:
+            maxInt = int(maxInt/10)
+            decrement = True
+    #
     t=[]
     f=[]
     tlabel=[]
     flabel=[]
-    for root,dirs,files in os.walk(path):
-        for name in files:
-            string=file_to_str(os.path.join(root,name))
-            if 'T' in name:
-                t.append(string)
-                tlabel.append(1)      
-            elif 'F' in name:
-                f.append(string)
+    with open(file) as fd:
+        reader=csv.DictReader(fd)
+        for row in reader:
+            if "T" in row['']:
+                t.append(row['0'])
+                tlabel.append(1)
+            elif "F" in row['']:
+                f.append(row['0'])
                 flabel.append(0)
     print("sum:",len(t)+len(f))
     print("True:",len(t))
     print("Talse:",len(f))
-    return(t+f,tlabel+flabel)
-
+    return(t+f,tlabel+flabel)    
 def main():
     
     #生成字典
-    pdata,plabels=files_to_str(path)
+    pdata,plabels=read_opcode(path)
     tokenizer=Tokenizer(num_words=max_words,filters=""" '!"#$%&()*+,-./:;<=>?@[\]^`{|}~\t\n""")#字典个数
     tokenizer.fit_on_texts(pdata)
     word_index=tokenizer.index_word

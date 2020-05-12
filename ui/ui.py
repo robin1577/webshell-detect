@@ -1,5 +1,4 @@
 import tkinter
-import tkinter.messagebox  # 消息框
 from tkinter import ttk
 import tkinter.filedialog as tkFD
 import os
