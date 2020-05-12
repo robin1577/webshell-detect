@@ -9,7 +9,7 @@ from keras import models,layers
 from keras import callbacks
 import pandas as pd
 from keras.utils  import plot_model
-path="D:\webshell-detect\php\phptrain_opcode"
+path="D:\webshell-detect\php\opcode.csv"
 max_len=1000#每一个文件最大读入1000个操作码
 max_words=300#字典最大个数
 def read_opcode(file):

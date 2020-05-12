@@ -1,5 +1,5 @@
 #codind:utf-8
-import os
+import os,csv,sys
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
@@ -8,42 +8,40 @@ from keras.preprocessing.sequence import pad_sequences
 from keras import layers,callbacks,Input,Model
 import pandas as pd
 from keras.utils  import plot_model
-path="D:\webshell-detect\php\phptrain_opcode"
-max_len=100#每一个文件最大读入100个单词
+path="D:\webshell-detect\php\opcode.csv"
+max_len=1000#每一个文件最大读入100个单词
 max_words=300#字典最大个数
 epoch=20
-def file_to_str(name):
-    string=""
-    with open(name, 'r',encoding="utf8") as f:
-        line = "1"
-        while line:
-                try:
-                    line=f.readline()
-                    line=line.strip("\n")
-                    line=line.strip("\r")
-                    string+=' '
-                    string+=line
-                except:
-                    line="1"
-    return string
-def files_to_str(path):
+def read_opcode(file):
+    #解决csv读取字段大小限制
+    maxInt = sys.maxsize
+    decrement = True
+    while decrement:
+        decrement = False
+        try:
+            csv.field_size_limit(maxInt)
+        except OverflowError:
+            maxInt = int(maxInt/10)
+            decrement = True
+    #
     t=[]
     f=[]
     tlabel=[]
     flabel=[]
-    for root,dirs,files in os.walk(path):
-        for name in files:
-            string=file_to_str(os.path.join(root,name))
-            if 'T' in name:
-                t.append(string)
-                tlabel.append(1)      
-            elif 'F' in name:
-                f.append(string)
+    with open(file) as fd:
+        reader=csv.DictReader(fd)
+        for row in reader:
+            if "T" in row['']:
+                t.append(row['0'])
+                tlabel.append(1)
+            elif "F" in row['']:
+                f.append(row['0'])
                 flabel.append(0)
     print("sum:",len(t)+len(f))
     print("True:",len(t))
     print("Talse:",len(f))
-    return(t+f,tlabel+flabel)
+    return(t+f,tlabel+flabel)    
+
 def TextCNN_model(x_train,y_train,x_val,y_val,x_test,y_test):
     text_input = Input(shape=(max_len,), dtype='float64')
     # 词嵌入训练
@@ -73,21 +71,22 @@ def TextCNN_model(x_train,y_train,x_val,y_val,x_test,y_test):
     ]
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
     history=model.fit(x_train,y_train,batch_size=128,epochs=epoch,validation_data=(x_val,y_val),callbacks=callback)
-    model.save("../models/TestRNN_model.h5")
+    model.save("../models/TextRNN_model.h5")
     results=model.evaluate(x_test,y_test)
     print(f"损失值：{results[0]},精确度：{results[1]}")
     return history
+
 def main():
     #生成字典
-    pdata,plabels=files_to_str(path)
+    pdata,plabels=read_opcode(path)
     tokenizer=Tokenizer(num_words=max_words,filters=""" '!"#$%&()*+,-./:;<=>?@[\]^`{|}~\t\n""")#字典个数
     tokenizer.fit_on_texts(pdata)
     word_index=tokenizer.index_word
-    #with open('models/tokenizer.pickle', 'wb') as f:
-    #  pickle.dump(tokenizer, f)
+    with open('models/tokenizer.pickle', 'wb') as f:
+      pickle.dump(tokenizer, f)
     print(f"字典个数{len(word_index)}")
-    #dataframe=pd.DataFrame.from_dict(word_index,orient="index")
-    #dataframe.to_csv("test.csv")
+    dataframe=pd.DataFrame.from_dict(word_index,orient="index")
+    dataframe.to_csv("test.csv")
     #文本转序列
     sequences=tokenizer.texts_to_sequences(pdata)
     #生成数据标签
