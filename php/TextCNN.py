@@ -1,14 +1,13 @@
 #codind:utf-8
-import os,csv,sys
-import numpy as np
+import csv,os,pickle,sys
 import matplotlib.pyplot as plt
-import pickle
+import numpy as np
+import pandas as pd
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras import layers,callbacks,Input,Model
-import pandas as pd
 from keras.utils  import plot_model
-path="D:\webshell-detect\php\opcode.csv"
+path="opcode.csv"
 max_len=1000#每一个文件最大读入100个单词
 max_words=300#字典最大个数
 epoch=20
@@ -126,6 +125,7 @@ def main():
     plt.title("Training and Validation accuracy")
     plt.legend()
     plt.show()
+
 if __name__ == "__main__":
     main()
 

@@ -1,12 +1,9 @@
-import tkinter
-from tkinter import ttk
+import tkinter,os,sys,random,win32api
 import tkinter.filedialog as tkFD
-import os
-import sys
-import random
-import win32api
+from tkinter import ttk
+import tkinter
 from win32com.shell import shell,shellcon
-import ui.predict_webshell
+import  predict_webshell
 #import predict_webshell
 number = 0
 def addfiles():
@@ -15,9 +12,9 @@ def addfiles():
     path_dir = tkFD.askdirectory()
     for root,dirs,files in os.walk(path_dir):
         for file in files:
-            probability=predict(file)
             path=str(root)+'/'+str(file)
-            if probability<9:
+            probability=predict(path)
+            if probability:
                 tree.insert('',index=10000+number,text=file,values=path)
                 number += 1
     tkinter.messagebox.showinfo('提示','已检测全部文件')
@@ -27,20 +24,26 @@ def addfiles():
 def addfile():
     global number
     path_file=tkFD.askopenfilename()
-    filename=os.path.split(path_file)[1]
-    tree.insert("",index=number,text=filename,values=path_file)
-    print(path_file)
-    tkinter.messagebox.showinfo('提示','已检测全部文件')
-
+    probability=predict(path_file)
+    if probability:
+        filename=os.path.split(path_file)[1]
+        tree.insert("",index=number,text=filename,values=path_file)
+        print(path_file)
+        tkinter.messagebox.showinfo('提示','已检测全部文件')
 #清空显示
 def clear():
     x=tree.get_children()#返回的是下标元组
     print("children",x)
     for item in x:
         tree.delete(item)
-#TODO
+
 def predict(file):
-    return random.randint(1,10)
+    probability=predict_webshell.predict_file(file)
+    if probability>0.6:
+        return True
+    else:
+        return False
+
 def del_selected():
     seleced=tree.selection()
     for item in seleced:
@@ -65,7 +68,6 @@ def onDBClick(event):
     path=tree.item(item,"values")[0]
     print("values:",path)
     win32api.ShellExecute(0, 'open', 'notepad.exe', path, '', 1)
-
 
 #初始化窗口
 window = tkinter.Tk()
