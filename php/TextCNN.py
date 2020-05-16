@@ -70,7 +70,7 @@ def TextCNN_model(x_train,y_train,x_val,y_val,x_test,y_test):
     ]
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
     history=model.fit(x_train,y_train,batch_size=128,epochs=epoch,validation_data=(x_val,y_val),callbacks=callback)
-    model.save("../models/TextRNN_model.h5")
+    model.save("../models/TextCNN_model.h5")
     results=model.evaluate(x_test,y_test)
     print(f"损失值：{results[0]},精确度：{results[1]}")
     return history

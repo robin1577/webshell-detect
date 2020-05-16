@@ -2,6 +2,7 @@ import tkinter,os,sys,random,win32api
 import tkinter.filedialog as tkFD
 from tkinter import ttk
 import tkinter
+import tkinter.messagebox 
 from win32com.shell import shell,shellcon
 import  predict_webshell
 #import predict_webshell
@@ -27,7 +28,8 @@ def addfile():
     probability=predict(path_file)
     if probability:
         filename=os.path.split(path_file)[1]
-        tree.insert("",index=number,text=filename,values=path_file)
+        tree.insert("",index=1000+number,text=filename,values=path_file)
+        number += 1
         print(path_file)
         tkinter.messagebox.showinfo('提示','已检测全部文件')
 #清空显示
@@ -63,8 +65,8 @@ def del_all():
     tkinter.messagebox.showinfo('提示','已删除全部webshell')
 #双击文件名打开记事本
 def onDBClick(event):
-    item= tree.index(tree.selection()[0])
-    print("select:",tree.selection())
+    item=tree.selection()
+    #print("select:",tree.selection())
     path=tree.item(item,"values")[0]
     print("values:",path)
     win32api.ShellExecute(0, 'open', 'notepad.exe', path, '', 1)

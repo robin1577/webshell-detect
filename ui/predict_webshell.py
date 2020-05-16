@@ -4,7 +4,6 @@ import numpy as np
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras import models
-path="D:/webshell-detect/samples_data/yii"
 max_len=1000#每一个序列最大读入1000个操作码
 max_words=300
 
@@ -32,7 +31,7 @@ def predict_file(file_path):
     string=opcode(file_path)
     with open('../models/tokenizer.pickle','rb') as f:
         tokenizer=pickle.load(f) 
-    model=models.load_model("../models/TextRNN_model.h5")
+    model=models.load_model("../models/TextCNN_model.h5")
     probability=wbshell_pre(string,tokenizer,model)
     print(probability)
     return probability
